@@ -1,0 +1,50 @@
+experiment_name: improved_yolo11s
+description: Улучшенный эксперимент с более емкой моделью и настройками под более точную локализацию опухоли.
+business_context: Автоматическая локализация подозрительных областей на МРТ-снимках для системы поддержки принятия решений врача.
+dataset_name: Brain Tumor
+dataset_url: https://docs.ultralytics.com/datasets/detect/brain-tumor/
+dataset_yaml: data/brain_tumor/dataset.yaml
+focus_classes:
+  - positive
+model: yolo11s.pt
+project: runs/lab1
+notes:
+  - Для положительного класса важна более точная локализация подозрительной области.
+  - Переход на YOLO11s и более длинное обучение должен повысить mAP50-95.
+hypotheses:
+  - Повышенное разрешение улучшит локализацию позитивного класса.
+  - YOLO11s покажет лучший mAP50-95, чем YOLO11n.
+  - AdamW и более щадящий learning rate сделают обучение стабильнее.
+train:
+  epochs: 5
+  imgsz: 704
+  batch: 8
+  patience: 3
+  workers: 0
+  seed: 42
+  device:
+  pretrained: true
+  optimizer: AdamW
+  lr0: 0.001
+  lrf: 0.01
+  weight_decay: 0.0007
+  warmup_epochs: 5.0
+  mosaic: 0.5
+  mixup: 0.05
+  fliplr: 0.0
+  hsv_h: 0.0
+  hsv_s: 0.0
+  hsv_v: 0.0
+  degrees: 2.0
+  translate: 0.08
+  scale: 0.25
+  close_mosaic: 6
+val:
+  split: val
+  batch: 8
+  imgsz: 704
+  conf: 0.001
+  iou: 0.7
+predict:
+  conf: 0.25
+  imgsz: 704

@@ -1,0 +1,50 @@
+student_name: Мудров Павел Федорович
+student_group: M80-403Б-22
+experiment_name: baseline_yolo11n
+description: Базовый эксперимент на YOLO11n для задачи локализации опухоли на МРТ-снимках.
+business_context: Автоматическая локализация подозрительных областей на МРТ-снимках для системы поддержки принятия решений врача.
+dataset_name: Brain Tumor
+dataset_url: https://docs.ultralytics.com/datasets/detect/brain-tumor/
+dataset_yaml: data/brain_tumor/dataset.yaml
+focus_classes:
+  - positive
+model: yolo11n.pt
+project: runs/lab1
+notes:
+  - Бейзлайн нужен как точка отсчета для дальнейшего улучшения модели.
+  - Выбрана компактная модель с умеренным разрешением для быстрого старта и стабильного обучения.
+hypotheses:
+  - YOLO11n даст адекватное базовое качество, но будет хуже локализовать положительные случаи с небольшой областью опухоли.
+train:
+  epochs: 12
+  imgsz: 640
+  batch: 16
+  patience: 6
+  workers: 0
+  seed: 42
+  device:
+  pretrained: true
+  optimizer: auto
+  lr0: 0.01
+  lrf: 0.01
+  weight_decay: 0.0005
+  warmup_epochs: 3.0
+  mosaic: 0.5
+  mixup: 0.0
+  fliplr: 0.0
+  hsv_h: 0.0
+  hsv_s: 0.0
+  hsv_v: 0.0
+  degrees: 2.0
+  translate: 0.05
+  scale: 0.2
+  close_mosaic: 4
+val:
+  split: val
+  batch: 16
+  imgsz: 640
+  conf: 0.001
+  iou: 0.7
+predict:
+  conf: 0.25
+  imgsz: 640
