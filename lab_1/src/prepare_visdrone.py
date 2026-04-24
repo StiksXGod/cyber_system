@@ -76,7 +76,9 @@ def convert_annotation(annotation_path: Path, image_path: Path) -> list[str]:
         if len(parts) < 8:
             continue
 
-        x, y, width, height, _, category, _, _ = (int(float(item)) for item in parts[:8])
+        x, y, width, height, score, category, _, _ = (int(float(item)) for item in parts[:8])
+        if score == 0:
+            continue
         if category <= 0 or category > len(CLASS_NAMES):
             continue
         if width <= 0 or height <= 0:
@@ -186,4 +188,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

@@ -2,4 +2,4 @@
 
 Сырые архивы хранятся в `data/raw/`.
 
-После запуска `src/download_brain_tumor.py` локальная копия датасета появится в `data/brain_tumor/`.
+После запуска `src/download_visdrone.py` локальная копия датасета в формате YOLO появится в `data/visdrone_yolo/`.

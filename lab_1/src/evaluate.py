@@ -17,8 +17,16 @@ from utils import (
 )
 
 DEFAULT_CLASS_NAMES = [
-    "negative",
-    "positive",
+    "pedestrian",
+    "people",
+    "bicycle",
+    "car",
+    "van",
+    "truck",
+    "tricycle",
+    "awning-tricycle",
+    "bus",
+    "motor",
 ]
 
 
@@ -99,6 +107,9 @@ def extract_dataset_names(config: dict[str, Any]) -> list[str]:
     """Load dataset class names from the YOLO dataset YAML if it exists."""
     dataset_path = resolve_from_root(config["dataset_yaml"])
     if not dataset_path.exists():
+        configured_names = config.get("expected_class_names")
+        if isinstance(configured_names, list) and configured_names:
+            return [str(name) for name in configured_names]
         return list(DEFAULT_CLASS_NAMES)
 
     dataset_config = load_yaml(dataset_path)
@@ -108,6 +119,9 @@ def extract_dataset_names(config: dict[str, Any]) -> list[str]:
         return [str(names[str(index)] if str(index) in names else names[index]) for index in ordered_indexes]
     if isinstance(names, list):
         return [str(name) for name in names]
+    configured_names = config.get("expected_class_names")
+    if isinstance(configured_names, list) and configured_names:
+        return [str(name) for name in configured_names]
     return list(DEFAULT_CLASS_NAMES)
 
 

@@ -1,25 +1,42 @@
 student_name: Мудров Павел Федорович
 student_group: M80-403Б-22
-experiment_name: baseline_yolo11n
-description: Базовый эксперимент на YOLO11n для задачи локализации опухоли на МРТ-снимках.
-business_context: Автоматическая локализация подозрительных областей на МРТ-снимках для системы поддержки принятия решений врача.
-dataset_name: Brain Tumor
-dataset_url: https://docs.ultralytics.com/datasets/detect/brain-tumor/
-dataset_yaml: data/brain_tumor/dataset.yaml
+experiment_name: baseline_visdrone_yolo11n
+description: Базовый эксперимент на YOLO11n для детекции объектов на аэрофотоснимках VisDrone.
+business_context: Автоматический мониторинг дорожной обстановки, пешеходных потоков и городских объектов с дронов для задач безопасности и транспортной аналитики.
+dataset_name: VisDrone2019-DET
+dataset_url: https://aiskyeye.com/submit-2023/object-detection-2/
+dataset_yaml: data/visdrone_yolo/dataset.yaml
+dataset_stats:
+  train_images: 6471
+  val_images: 548
+expected_class_names:
+  - pedestrian
+  - people
+  - bicycle
+  - car
+  - van
+  - truck
+  - tricycle
+  - awning-tricycle
+  - bus
+  - motor
 focus_classes:
-  - positive
+  - pedestrian
+  - people
+  - bicycle
+  - motor
 model: yolo11n.pt
 project: runs/lab1
 notes:
-  - Бейзлайн нужен как точка отсчета для дальнейшего улучшения модели.
-  - Выбрана компактная модель с умеренным разрешением для быстрого старта и стабильного обучения.
+  - Бейзлайн нужен как точка отсчета для последующего улучшения модели на сценах с большим количеством мелких объектов.
+  - Выбрана компактная модель с умеренным разрешением для быстрого старта и контроля времени обучения на полном датасете.
 hypotheses:
-  - YOLO11n даст адекватное базовое качество, но будет хуже локализовать положительные случаи с небольшой областью опухоли.
+  - YOLO11n даст стабильное базовое качество, но будет хуже работать с мелкими объектами и плотными сценами.
 train:
-  epochs: 12
+  epochs: 8
   imgsz: 640
-  batch: 16
-  patience: 6
+  batch: 8
+  patience: 4
   workers: 0
   seed: 42
   device:
@@ -29,19 +46,19 @@ train:
   lrf: 0.01
   weight_decay: 0.0005
   warmup_epochs: 3.0
-  mosaic: 0.5
+  mosaic: 1.0
   mixup: 0.0
-  fliplr: 0.0
-  hsv_h: 0.0
-  hsv_s: 0.0
-  hsv_v: 0.0
-  degrees: 2.0
-  translate: 0.05
-  scale: 0.2
-  close_mosaic: 4
+  fliplr: 0.5
+  hsv_h: 0.015
+  hsv_s: 0.7
+  hsv_v: 0.4
+  degrees: 0.0
+  translate: 0.1
+  scale: 0.5
+  close_mosaic: 2
 val:
   split: val
-  batch: 16
+  batch: 8
   imgsz: 640
   conf: 0.001
   iou: 0.7

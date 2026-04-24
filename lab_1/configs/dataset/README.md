@@ -1,9 +1,9 @@
 # Dataset Config
 
-Файл `data/brain_tumor/dataset.yaml` создается автоматически после запуска:
+Файл `data/visdrone_yolo/dataset.yaml` создается автоматически после запуска:
 
 ```bash
-.venv/bin/python src/download_brain_tumor.py
+.venv/bin/python src/download_visdrone.py
 ```
 
 Эксперименты из `configs/experiments/` используют именно этот локальный `dataset.yaml`.

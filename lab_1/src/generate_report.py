@@ -11,8 +11,16 @@ from utils import dump_json, load_json, load_yaml, resolve_from_root
 BASE_CONFIG: dict[str, Any] = {}
 
 DEFAULT_CLASS_NAMES = [
-    "negative",
-    "positive",
+    "pedestrian",
+    "people",
+    "bicycle",
+    "car",
+    "van",
+    "truck",
+    "tricycle",
+    "awning-tricycle",
+    "bus",
+    "motor",
 ]
 
 METRIC_DEFINITIONS = [
@@ -54,7 +62,8 @@ lab_1/
 ├── reports/
 │   └── final_report.md
 └── src/
-    ├── download_brain_tumor.py
+    ├── download_visdrone.py
+    ├── prepare_visdrone.py
     ├── train.py
     ├── evaluate.py
     ├── predict.py
@@ -139,6 +148,10 @@ def dataset_names(bundle: dict[str, Any]) -> list[str]:
         if isinstance(raw_names, list) and raw_names:
             return [str(name) for name in raw_names]
 
+    configured_names = bundle["config"].get("expected_class_names")
+    if isinstance(configured_names, list) and configured_names:
+        return [str(name) for name in configured_names]
+
     return list(DEFAULT_CLASS_NAMES)
 
 
@@ -185,12 +198,28 @@ def render_dataset_description(class_names: list[str]) -> str:
     dataset_name = BASE_CONFIG.get("dataset_name", "Dataset")
     dataset_url = BASE_CONFIG.get("dataset_url", "#")
     business_context = BASE_CONFIG.get("business_context", "не указан")
+    dataset_stats = BASE_CONFIG.get("dataset_stats", {})
     class_list = ", ".join(class_names)
     class_count = len(class_names)
     class_word = "класс" if class_count == 1 else "класса" if 2 <= class_count <= 4 else "классов"
+    stats_line = ""
+    if isinstance(dataset_stats, dict):
+        train_images = dataset_stats.get("train_images")
+        val_images = dataset_stats.get("val_images")
+        test_images = dataset_stats.get("test_images")
+        parts: list[str] = []
+        if train_images is not None:
+            parts.append(f"train: {train_images}")
+        if val_images is not None:
+            parts.append(f"val: {val_images}")
+        if test_images is not None:
+            parts.append(f"test: {test_images}")
+        if parts:
+            stats_line = f"**Размер:** {'; '.join(parts)} изображений\n\n"
     return (
         f"**Датасет:** [{dataset_name}]({dataset_url})\n\n"
         f"**{class_count} {class_word}:** {class_list}\n\n"
+        f"{stats_line}"
         "**Обоснование выбора:**  \n"
         f"{business_context} "
         "Датасет уже размечен в формате object detection и подходит для воспроизводимого "
@@ -238,7 +267,7 @@ def render_improved_hypotheses_table(baseline: dict[str, Any], improved: dict[st
             f"`{baseline['config']['model']}` -> `{improved['config']['model']}` |"
         ),
         (
-            "| H2 | Увеличение разрешения поможет точнее локализовать целевой объект | "
+            "| H2 | Увеличение разрешения поможет точнее локализовать мелкие объекты | "
             f"`imgsz: {baseline_train.get('imgsz', 'н/д')} -> {improved_train.get('imgsz', 'н/д')}` |"
         ),
         (
@@ -292,10 +321,10 @@ pip install -r requirements.txt
 ### 4.2 Подготовка датасета
 
 ```bash
-.venv/bin/python src/download_brain_tumor.py
+.venv/bin/python src/download_visdrone.py
 ```
 
-Скрипт сам скачивает архив с официального зеркала Ultralytics, распаковывает его в `data/brain_tumor/` и создает локальный `dataset.yaml`.
+Скрипт скачивает архивы VisDrone train/val, распаковывает их в `data/raw/`, конвертирует аннотации в формат YOLO и создает локальный `data/visdrone_yolo/dataset.yaml`.
 
 ### 4.3 Обучение и сравнение
 
@@ -367,7 +396,7 @@ def render_hypothesis_results(baseline: dict[str, Any], improved: dict[str, Any]
     small_improved = average_per_class_metric(improved, focus_classes, "map50")
     status_h2, details_h2 = compare_values(small_baseline, small_improved)
     rows.append(
-        "| H2: Повышенное разрешение помогает целевому классу | "
+        "| H2: Повышенное разрешение помогает малым классам | "
         f"**{status_h2}** — сравнение среднего `AP@0.5` по классам "
         f"`{', '.join(focus_classes)}`. {details_h2} |"
     )
