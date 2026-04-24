@@ -33,10 +33,10 @@ notes:
 hypotheses:
   - YOLO11n даст стабильное базовое качество, но будет хуже работать с мелкими объектами и плотными сценами.
 train:
-  epochs: 8
+  epochs: 3
   imgsz: 640
   batch: 8
-  patience: 4
+  patience: 2
   workers: 0
   seed: 42
   device:
@@ -55,7 +55,7 @@ train:
   degrees: 0.0
   translate: 0.1
   scale: 0.5
-  close_mosaic: 2
+  close_mosaic: 1
 val:
   split: val
   batch: 8

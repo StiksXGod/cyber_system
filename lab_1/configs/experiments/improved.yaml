@@ -27,16 +27,16 @@ model: yolo11s.pt
 project: runs/lab1
 notes:
   - Для мелких объектов в VisDrone особенно важно повысить точность локализации на плотных сценах.
-  - Переход на YOLO11s и более высокое разрешение должен улучшить качество детекции по строгой метрике.
+  - Переход на YOLO11s и умеренно повышенное разрешение должен улучшить качество детекции по строгой метрике.
 hypotheses:
   - Повышенное разрешение улучшит детекцию малых классов pedestrian, people, bicycle и motor.
   - YOLO11s покажет лучший mAP50-95, чем YOLO11n, на сложных аэросценах.
   - AdamW и более щадящий learning rate сделают обучение стабильнее.
 train:
-  epochs: 12
-  imgsz: 960
-  batch: 4
-  patience: 5
+  epochs: 4
+  imgsz: 704
+  batch: 8
+  patience: 2
   workers: 0
   seed: 42
   device:
@@ -54,14 +54,14 @@ train:
   hsv_v: 0.4
   degrees: 0.0
   translate: 0.1
-  scale: 0.6
-  close_mosaic: 3
+  scale: 0.55
+  close_mosaic: 1
 val:
   split: val
-  batch: 4
-  imgsz: 960
+  batch: 8
+  imgsz: 704
   conf: 0.001
   iou: 0.7
 predict:
   conf: 0.25
-  imgsz: 960
+  imgsz: 704
